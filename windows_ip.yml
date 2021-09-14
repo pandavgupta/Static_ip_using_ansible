@@ -8,9 +8,9 @@
     - network_type: 'Ethernet'
   tasks:
       - name: set DNS
-        win_shell: Set-DnsClientServerAddress -InterfaceIndex 6 -ServerAddresse>
+        win_shell: Set-DnsClientServerAddress -InterfaceIndex 6 -ServerAddresses "{{dns}}"
       - name: Set up static IP address
-        win_shell: "Get-NetIPAddress -InterfaceAlias {{network_type}} | New-Net>
+        win_shell: "Get-NetIPAddress -InterfaceAlias {{network_type}} | New-NetIPAddress -IPAddress {{my_host_ip}} -PrefixLength {{prefix_length}} -DefaultGateway {{default_gateway}}"
         async: 100
         poll: 0
       - name: Change ansible's ip address for each host
