@@ -1,0 +1,41 @@
+- hosts: win
+  gather_facts: no
+  vars:
+    - my_host_ip: "192.168.0.121"
+    - prefix_length: 24
+    - default_gateway: "192.168.0.1"
+    - dns: "192.168.0.1"
+    - network_type: 'Ethernet'
+  tasks:
+      - name: set DNS
+        win_shell: Set-DnsClientServerAddress -InterfaceIndex 6 -ServerAddresse>
+      - name: Set up static IP address
+        win_shell: "Get-NetIPAddress -InterfaceAlias {{network_type}} | New-Net>
+        async: 100
+        poll: 0
+      - name: Change ansible's ip address for each host
+        set_fact:
+             ansible_host: "{{ my_host_ip }}"
+      - name: Wait for the hosts network interface to come back up
+        local_action:
+               module: wait_for
+               host: "{{ ansible_host }}"
+               port: 5986
+               delay: 10
+               state: started
+        register: wait_result
+      - name: changing inventory
+        template:
+             src: ./template.j2
+             dest: ./hosts
+        delegate_to: localhost
+      - name: refresh connection
+        meta: refresh_inventory
+- hosts: win
+  vars:
+     - network_type: 'Ethernet'
+  tasks:
+      - name: disable ipv6
+        win_shell: "Disable-NetAdapterBinding -Name {{network_type}} -ComponentID ms_tcpip6"
+
+

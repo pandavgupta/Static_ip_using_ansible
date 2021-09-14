@@ -1,0 +1,9 @@
+[win]
+_put_ip
+[win:vars]
+ansible_winrm_host=_put_ip
+ansible_user=_put_user_name
+ansible_password=_put_password
+ansible_connection=winrm
+ansible_winrm_transport= ntlm
+ansible_winrm_server_cert_validation=ignore
