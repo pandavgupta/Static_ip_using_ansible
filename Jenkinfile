@@ -10,8 +10,18 @@ pipeline {
                   }
 
             steps {
+                  script {
+                    sh '''
+                        if [ -d "${WORKSPACE}/hosts" ]
+                        then
+                            echo "Directory ${WORKSPACE}/hosts"
+                        else
+                            echo "directory not present"
+                        fi
+                    '''  }
+               
                 sh '''
-                    cd Ansible/playbooks/StaticIP_IPV6Disable/
+                    cd ${WORKSPACE}
                     #configuring hosts file
                     sudo sed -i `expr s/_put_ip/${_ip}/g` host1
                     sudo sed -i `expr s/_put_user_name/${_user}/g` host1
