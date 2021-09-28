@@ -1,0 +1,32 @@
+pipeline {
+    agent any
+
+    stages {
+
+
+        stage('prepare host file') {
+            environment{
+                  my_key=credentials('_password')
+                  }
+
+            steps {
+                sh '''
+                    cd Ansible/playbooks/StaticIP_IPV6Disable/
+                    #configuring hosts file
+                    sudo sed -i `expr s/_put_ip/${_ip}/g` host1
+                    sudo sed -i `expr s/_put_user_name/${_user}/g` host1
+                    sudo sed -i `expr s/_put_password/${my_key_psw}/g` host1
+                    '''
+               }
+          }
+
+
+        stage('playbook run') {
+            steps {
+                sh '''
+                ansible-playbook -i hosts StaticIp_IPV6Disable.yml
+                '''
+            }
+          }
+    }
+}
